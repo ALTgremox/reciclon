@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>RECICLON</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="lobby">
+  <div id="bg-layer"></div>
+  <button id="fullscreenBtn" class="btn ghost small">⛶ Pantalla completa</button>
+  <div id="rotateHint" class="rotate-hint hidden">📱 Gira tu dispositivo a horizontal</div>
+
+  <div id="app">
+    <!-- 🟢 PANTALLA INICIAL -->
+    <section id="screen-home" class="screen shown">
+      <div class="panel home-panel">
+        <div class="logo-block">
+          <div class="logo-circle">
+            <img src="images/logo.png" alt="Logo" />
+          </div>
+          <h3>Juego educativo para aprender a clasificar y gestionar residuos.</h3>
+        </div>
+        <div class="home-actions">
+          <button id="homeCreateBtn" class="btn primary big">Crear partida</button>
+          <button id="homeJoinBtn" class="btn big">Unirse a partida</button>
+          <button id="homeTutorialBtn" class="btn ghost">Tutorial / Cómo jugar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 🟡 LOBBY (crear / unirse) -->
+    <section id="screen-lobby" class="screen">
+      <div class="panel">
+        <p class="muted"><h2>Crea una sala o únete con un código. Todos deben estar en la misma Wi-Fi.</h2></p>
+
+        <div class="lobby-grid">
+         <!-- Modo CREAR -->
+          <div class="card lobby-host">
+            <h3>Crear sala</h3>
+            <input id="hostName" placeholder="Tu nombre" />
+            <input id="hostColor" type="color" value="#22c55e" />
+            <button id="createBtn" class="btn primary">Crear</button>
+            <button id="createBackBtn" class="btn ghost small">← Volver</button>
+          </div>
+
+        <!-- Modo UNIRSE -->
+          <div class="card lobby-join">
+            <h3>Unirme a sala</h3>
+            <input id="joinCode" placeholder="Código (ABCDE)" maxlength="5" />
+            <input id="joinName" placeholder="Tu nombre" />
+            <input id="joinColor" type="color" value="#0ea5e9" />
+            <button id="joinBtn" class="btn primary">Unirse</button>
+            <button id="joinBackBtn" class="btn ghost small">← Volver</button>
+          </div>
+
+          <!-- Información de la sala (ahora está debajo de los botones) -->
+          <div id="roomInfo" class="room-info hidden">
+            <h2>Código de sala</h2>
+            <div class="room-code-display">
+              <span id="roomCode">-----</span>
+            </div>
+            <p class="muted small"><h3>Comparte este código con los demás jugadores para que se unan.</h3></p>
+            <div id="playersList" class="players"></div>
+            <button id="startBtn" class="btn primary">Iniciar partida</button>
+          </div>
+        </div>
+    </section>
+
+    <!-- 🔵 JUEGO -->
+    <section id="screen-game" class="screen">
+      <header class="topbar">
+        <div class="left">
+          <span id="badgeCode" class="pill"></span>
+        </div>
+        <div id="turnInfo" class="pill">Turno: —</div>
+      </header>
+
+      <main class="table">
+        <aside class="side">
+          <div class="stack">
+            <div id="deck" class="card back" title="Robar carta del mazo">
+              <span class="stack-label">ROBAR</span>
+            </div>
+            <div id="deckCount" class="pill small">0</div>
+          </div>
+
+          <div class="stack">
+            <div id="discard" class="discard"></div>
+            <div class="muted small">Descartes</div>
+          </div>
+
+          <div id="log" class="log"></div>
+        </aside>
+
+        <section id="boards" class="boards"></section>
+
+        <aside class="hand-area">
+          <h3>Tu mano</h3>
+          <div id="cardHint" class="card-hint">
+            Toca o pasa el mouse por una carta para ver qué hace.
+          </div>
+
+          <div id="hand" class="hand"></div>
+
+          <div id="actionHint" class="action-hint">
+            Selecciona una carta para jugarla o descartarla.
+          </div>
+
+          <div class="actions">
+            <button id="discardSel" class="btn danger">Descartar (1–3)</button>
+          </div>
+        </aside>
+      </main>
+    </section>
+
+    <!-- 📘 MODAL TUTORIAL -->
+      <div id="tutorialModal" class="modal hidden" aria-hidden="true">
+        <!-- Fondo oscuro: al hacer clic, cierra -->
+        <div
+          id="tutorialBackdrop"
+          class="modal-backdrop"
+          onclick="(function(m){
+            if(!m) return;
+            m.classList.add('hidden');
+            m.setAttribute('aria-hidden','true');
+          })(document.getElementById('tutorialModal'))">
+        </div>
+
+        <div class="modal-content">
+          <!-- Botón X: al hacer clic, cierra -->
+          <button
+            id="tutorialClose"
+            class="modal-close"
+            aria-label="Cerrar tutorial"
+            onclick="(function(m){
+              if(!m) return;
+              m.classList.add('hidden');
+              m.setAttribute('aria-hidden','true');
+            })(document.getElementById('tutorialModal'))">
+            ✕
+          </button>
+
+          <h1>Cómo jugar</h1>
+          <h3>Contenedor</h3>
+          <div class="tutorial-body">
+            <!-- Cambia esta imagen por la carta que quieras explicar -->
+            <img src="images/organos/peligrosos.jpeg" alt="Carta de ejemplo" class="tutorial-image">
+            <p id="tutorialText">
+              Los contenedores son las cartas que representan tu zona: aprovechables, no aprovechables, peligrosos y orgánicos.  
+              Tu objetivo en el juego es reunir cuatro contenedores distintos y mantenerlos con sus respectivos tipos de residuos. 
+              Los contenedores pueden estar contaminados, con reciclables o cerrados(inmune) dependiendo de las cartas que los afecten. Perder un contenedor te retrasa, así que protegerlos es clave.
+            </p>
+          </div>
+          <h3>Contaminantes</h3>
+          <div class="tutorial-body">
+            <!-- Cambia esta imagen por la carta que quieras explicar -->
+            <img src="images/virus/peligrosos.jpeg" alt="Carta de ejemplo" class="tutorial-image">
+            <p id="tutorialText">
+              Los contaminantes son cartas que contaminan los contenedores de los jugadores. 
+              Cada contaminante tiene un color que coincide con el contenedor que puede atacar. 
+              Un contaminante sobre un contenedor lo deja infectado y vulnerable, y si el mismo contenedor recibe un segundo contaminante del mismo color, queda destruido y se descarta. 
+              Son la herramienta principal para retrasar el progreso de los oponentes.
+            </p>
+          </div>
+          <h3>Reciclables</h3>
+          <div class="tutorial-body">
+            <!-- Cambia esta imagen por la carta que quieras explicar -->
+            <img src="images/medicinas/peligrosos.jpeg" alt="Carta de ejemplo" class="tutorial-image">
+            <p id="tutorialText">
+              Los reciclables curan contenedores infectados y también sirven para protegerlos. 
+              Un reciclable del mismo color elimina un contaminante, y si se coloca sobre un contenedor limpio, lo llena. 
+              Cuando un contenedor recibe dos reciclables del mismo color, queda completamente cerrado o inmunizado, lo que significa que no puede volver a ser contaminado durante la partida.
+            </p>
+          </div>
+          <h2>Cartas Especiales</h2>
+          <h3>Trasplante de contenedores</h3>
+          <div class="tutorial-body">
+            <!-- Cambia esta imagen por la carta que quieras explicar -->
+            <img src="images/tratamientos/trasplante.jpeg" alt="Carta de ejemplo" class="tutorial-image">
+            <p id="tutorialText">
+              Trasplante de contenedores permite intercambiar un contenedor tuyo con el de otro jugador. 
+              Es una carta muy estratégica porque puede usarse para robar un contenedor clave o para liberarse de uno que está en mal estado.
+            </p>
+          </div>
+          <h3>Ladrón de contenedores</h3>
+          <div class="tutorial-body">
+            <!-- Cambia esta imagen por la carta que quieras explicar -->
+            <img src="images/tratamientos/ladron.jpeg" alt="Carta de ejemplo" class="tutorial-image">
+            <p id="tutorialText">
+              Ladrón de contenedores permite tomar directamente un contenedor sano de otro jugador y colocarlo en tu zona. 
+              Es una de las cartas más agresivas, ya que no requiere intercambio y puede arruinar el progreso de alguien justo antes de ganar.
+            </p>
+          </div>
+          <h3>Error de limpieza</h3>
+          <div class="tutorial-body">
+            <!-- Cambia esta imagen por la carta que quieras explicar -->
+            <img src="images/tratamientos/error_medico.jpeg" alt="Carta de ejemplo" class="tutorial-image">
+            <p id="tutorialText">
+              Error de limpieza hace que intercambies tu zona completa con la de otro jugador, es decir, todos tus contenedores con todos sus reciclables o contaminantes, por los del otro. 
+              Esta carta puede cambiar totalmente el rumbo de la partida, ya sea para salvarte de una situación crítica o para arrebatarle la victoria a alguien que está a punto de ganar.
+            </p>
+          </div>
+          <h3>Servicio de limpieza</h3>
+          <div class="tutorial-body">
+            <!-- Cambia esta imagen por la carta que quieras explicar -->
+            <img src="images/tratamientos/guante.jpeg" alt="Carta de ejemplo" class="tutorial-image">
+            <p id="tutorialText">
+              Servicio de limpieza obliga a todos los demás jugadores a descartar completamente su mano. 
+              Se usa para frenar el juego de los oponentes, especialmente cuando están acumulando cartas de protección o ataque.
+            </p>
+          </div>
+          <h3>Contagio</h3>
+          <div class="tutorial-body">
+            <!-- Cambia esta imagen por la carta que quieras explicar -->
+            <img src="images/tratamientos/contagio.jpeg" alt="Carta de ejemplo" class="tutorial-image">
+            <p id="tutorialText">
+              Contagio te permite tomar todos los contaminantes que tengas colocados en tus contenedores y moverlos a los órganos de otros jugadores. 
+              Es una carta muy útil cuando tu zona está muy infectada, ya que te limpia por completo mientras transfieres los contaminantes a los demás. 
+              Puede cambiar el ritmo del juego de forma brusca, especialmente si envías varios contaminantes a un jugador que estaba a punto de ganar.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
+  </div>
+
+  <!-- Socket.io (global io) -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- Entrada en módulos -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>
