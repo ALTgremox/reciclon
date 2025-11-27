@@ -4,9 +4,9 @@
   "description": "Aplicación de Reciclón",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",  // Este es el script que usa Render o Vercel para ejecutar la aplicación
-    "dev": "nodemon server.js",  // Para desarrollo en local (si usas nodemon)
-    "build": "tsc"  // Si estás usando TypeScript, este es el comando de compilación
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "tsc"
   },
   "dependencies": {
     "express": "^4.17.1",
