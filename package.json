@@ -1,13 +1,19 @@
 {
-  "name": "virus-lan-rooms-final",
+  "name": "reciclon",
   "version": "1.0.0",
-  "description": "Virus (juego de mesa) en web con salas por c\u00f3digo, pantalla completa, orientaci\u00f3n horizontal y fondo m\u00e9dico responsive. LAN con Socket.io.",
+  "description": "Aplicación de Reciclón",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",  // Este es el script que usa Render o Vercel para ejecutar la aplicación
+    "dev": "nodemon server.js",  // Para desarrollo en local (si usas nodemon)
+    "build": "tsc"  // Si estás usando TypeScript, este es el comando de compilación
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "socket.io": "^4.7.2"
+    "express": "^4.17.1",
+    "socket.io": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.0",
+    "nodemon": "^2.0.0"
   }
 }
